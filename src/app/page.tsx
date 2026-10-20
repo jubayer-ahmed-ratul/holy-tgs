@@ -4,7 +4,6 @@ import TrustStatsStrip from '@/components/home/TrustStatsStrip';
 import AboutSection from '@/components/home/AboutSection';
 import ServicesSection from '@/components/home/ServicesSection';
 import DestinationsSection from '@/components/home/DestinationsSection';
-import UniversitiesSection from '@/components/home/UniversitiesSection';
 import ProcessSection from '@/components/home/ProcessSection';
 import PartnersSection from '@/components/home/PartnersSection';
 import GallerySection from '@/components/home/GallerySection';
@@ -19,7 +18,6 @@ export default function HomePage() {
       <AboutSection />
       <ServicesSection />
       <DestinationsSection />
-      <UniversitiesSection />
       <ProcessSection />
       <PartnersSection />
       <GallerySection />
