@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -44,21 +44,95 @@ const iconMap: Record<string, React.ReactNode> = {
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [expandedMobileItem, setExpandedMobileItem] = useState<string | null>(null);
 
-  // Monitor scroll for smooth floating card transition
+  const lastScrolledRef = useRef(false);
+
+  // Monitor scroll for smooth floating card transition (persisted across reloads without jank)
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 25) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
+    setIsMounted(true);
+
+    const checkScrollState = () => {
+      const currentY =
+        window.scrollY ||
+        window.pageYOffset ||
+        document.documentElement.scrollTop ||
+        0;
+
+      let savedScrolled = false;
+      try {
+        savedScrolled = sessionStorage.getItem('holytgs_is_scrolled') === '1';
+      } catch {
+        // ignore
+      }
+
+      const isNowScrolled = currentY > 25 || savedScrolled;
+      if (lastScrolledRef.current !== isNowScrolled) {
+        lastScrolledRef.current = isNowScrolled;
+        setIsScrolled(isNowScrolled);
       }
     };
+
+    // 1. Check immediately on mount
+    checkScrollState();
+
+    // 2. Poll across RAF and timeouts to catch browser / Lenis scroll restoration
+    const r1 = requestAnimationFrame(checkScrollState);
+    const t1 = setTimeout(checkScrollState, 40);
+    const t2 = setTimeout(checkScrollState, 120);
+    const t3 = setTimeout(checkScrollState, 280);
+
+    // 3. Confirm scroll position after layout settles (if confirmed at top, reset to static)
+    const t4 = setTimeout(() => {
+      const finalY =
+        window.scrollY ||
+        window.pageYOffset ||
+        document.documentElement.scrollTop ||
+        0;
+      if (finalY <= 25) {
+        lastScrolledRef.current = false;
+        setIsScrolled(false);
+        try {
+          sessionStorage.setItem('holytgs_is_scrolled', '0');
+          sessionStorage.setItem('holytgs_scroll_y', '0');
+        } catch {
+          // ignore
+        }
+      }
+    }, 500);
+
+    // 4. Live scroll handler - only executes state and storage update when state actually flips!
+    const handleScroll = () => {
+      const currentY =
+        window.scrollY ||
+        window.pageYOffset ||
+        document.documentElement.scrollTop ||
+        0;
+      const scrolled = currentY > 25;
+      if (scrolled !== lastScrolledRef.current) {
+        lastScrolledRef.current = scrolled;
+        setIsScrolled(scrolled);
+        try {
+          sessionStorage.setItem('holytgs_is_scrolled', scrolled ? '1' : '0');
+        } catch {
+          // ignore
+        }
+      }
+    };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    return () => {
+      cancelAnimationFrame(r1);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   // Close mobile menu on resize to desktop
@@ -77,10 +151,14 @@ export default function Navbar() {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]">
+    <header className="fixed top-0 left-0 w-full z-50">
       {/* Navigation Bar: Transparent over hero image in normal state, floating glassy capsule when scrolled or mobile menu open */}
       <nav
-        className={`transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] mx-auto ${
+        className={`${
+          isMounted
+            ? 'transition-[background-color,border-color,box-shadow,padding,margin,border-radius] duration-300 ease-out'
+            : 'transition-none'
+        } mx-auto ${
           isScrolled || mobileMenuOpen
             ? 'w-11/12 mt-2 sm:mt-2.5 rounded-2xl sm:rounded-3xl bg-white/95 backdrop-blur-xl border border-white/80 shadow-[0_10px_35px_-5px_rgba(15,23,42,0.08)] py-2 sm:py-2.5 px-3.5 sm:px-7'
             : 'w-11/12 mt-2.5 sm:mt-4 rounded-2xl bg-transparent border-transparent shadow-none py-2 sm:py-3 px-1 sm:px-4'

@@ -2,44 +2,34 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { DestinationItem } from './destinationData';
 
 interface DestinationCardProps {
   destination: DestinationItem;
-  index: number;
+  index?: number;
 }
 
-export default function DestinationCard({
-  destination,
-  index,
-}: DestinationCardProps) {
+export default function DestinationCard({ destination }: DestinationCardProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 35 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{
-        duration: 0.6,
-        delay: index * 0.1,
-        ease: [0.16, 1, 0.3, 1],
-      }}
-      className="h-[440px] sm:h-[480px] lg:h-[500px]"
-    >
+    <div className="h-[440px] sm:h-[480px] lg:h-[500px]">
       {/* Entire Card acts as a clickable Link to the Country Page */}
       <Link
         href={destination.link}
         className="group relative block w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border border-slate-200/80 cursor-pointer"
       >
         {/* Full Background Image */}
-        <img
+        <Image
           src={destination.image}
           alt={destination.name}
-          className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700 ease-out"
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          loading="lazy"
+          className="object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
         />
 
         {/* Dark Cinematic Gradient Overlay for Crisp Text Readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/45 to-transparent opacity-90 group-hover:opacity-95 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/45 to-transparent opacity-90 group-hover:opacity-95 transition-opacity duration-300 pointer-events-none" />
 
         {/* Bottom Content: Flag (Top-Left of Country Name), Country Name, Subheading */}
         <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 z-10 space-y-2 sm:space-y-2.5">
@@ -59,6 +49,6 @@ export default function DestinationCard({
           </p>
         </div>
       </Link>
-    </motion.div>
+    </div>
   );
 }

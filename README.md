@@ -70,3 +70,4 @@ npm run start
 ## 📄 License
 
 This project is proprietary and developed for Holy Tours and Global Studies.
+

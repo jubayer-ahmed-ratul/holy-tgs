@@ -3,6 +3,8 @@ import { Roboto } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import SmoothScroll from '@/components/common/SmoothScroll';
+import WhatsAppButton from '@/components/common/WhatsAppButton';
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700', '900'],
@@ -35,11 +37,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${roboto.variable} scroll-smooth`}>
-      <body className="min-h-screen flex flex-col bg-slate-50 text-slate-900 antialiased font-sans selection:bg-brand-amber-500 selection:text-slate-950 font-sans">
-        <Navbar />
-        <main className="flex-1 w-full">{children}</main>
-        <Footer />
+    <html lang="en" className={roboto.variable}>
+      <body className="min-h-screen flex flex-col bg-slate-50 text-slate-900 antialiased font-sans selection:bg-brand-amber-500 selection:text-slate-950">
+        <SmoothScroll>
+          <Navbar />
+          <main className="flex-1 w-full">{children}</main>
+          <Footer />
+          <WhatsAppButton />
+        </SmoothScroll>
       </body>
     </html>
   );

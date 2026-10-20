@@ -49,7 +49,8 @@ const STATS_DATA: StatItem[] = [
 ];
 
 /**
- * AnimatedCounter: smoothly rolls numbers from 0 up to target when visible in viewport
+ * AnimatedCounter: smoothly rolls numbers from 0 up to target when visible in viewport.
+ * Configured with a deliberate, smooth duration so the user can easily observe the increment.
  */
 function AnimatedCounter({
   target,
@@ -65,8 +66,9 @@ function AnimatedCounter({
   React.useEffect(() => {
     if (!trigger) return;
 
+    // Slow and smooth counter animation (3.6s) so numbers are clearly readable as they rise
     const controls = animate(0, target, {
-      duration: 2.2,
+      duration: 3.6,
       ease: [0.16, 1, 0.3, 1], // Smooth easeOut deceleration curve
       onUpdate: (value) => {
         setCount(value);
@@ -87,7 +89,8 @@ function AnimatedCounter({
 
 export default function TrustStatsStrip() {
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const isInView = useInView(containerRef, { once: true, margin: '0px' });
+  // Triggers only when scrolled into view so the user doesn't miss the animation
+  const isInView = useInView(containerRef, { once: true, margin: '-30px' });
 
   return (
     <section className="relative z-20 -mt-12 sm:-mt-16 lg:-mt-20 w-11/12 mx-auto">
@@ -99,7 +102,7 @@ export default function TrustStatsStrip() {
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-[#0A3868] via-[#0D447D] to-[#0A3868] border border-white/20 shadow-[0_20px_50px_-10px_rgba(10,56,104,0.45)] py-6 sm:py-8 lg:py-8 px-4 sm:px-6 lg:px-8"
       >
-        {/* Subtle Ambient Brand Glows (Teal reflections matching the logo) */}
+        {/* Subtle Ambient Brand Glows */}
         <div className="absolute -top-20 -right-20 w-56 h-56 bg-brand-teal-400/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute -bottom-20 -left-20 w-56 h-56 bg-brand-teal-500/15 rounded-full blur-3xl pointer-events-none" />
 
@@ -111,10 +114,8 @@ export default function TrustStatsStrip() {
               <div
                 key={item.id}
                 className={`relative flex flex-col items-center text-center px-3 py-3 sm:py-4 lg:py-2 transition-all duration-300 group
-                  ${/* Mobile 2x2 grid crosshair dividers */ ''}
                   ${index % 2 === 0 ? 'border-r border-white/10 lg:border-r-0' : ''}
                   ${index < 2 ? 'border-b border-white/10 lg:border-b-0 pb-4 sm:pb-5 lg:pb-1' : 'pt-4 sm:pt-5 lg:pt-1'}
-                  ${/* Desktop 4-column vertical dividers */ ''}
                   ${index < 3 ? 'lg:border-r lg:border-white/15' : ''}
                 `}
               >
@@ -124,7 +125,7 @@ export default function TrustStatsStrip() {
                 </div>
 
                 {/* Big Stat Value with Animated Counter & Teal Suffix */}
-                <div className="text-2xl sm:text-3xl lg:text-4xl xl:text-[40px] font-black text-white tracking-tight leading-tight mb-1 sm:mb-1.5">
+                <div className="text-2xl sm:text-3xl lg:text-4xl xl:text-[40px] font-black text-white tracking-tight leading-tight mb-1 sm:mb-1.5 font-sans">
                   <AnimatedCounter
                     target={item.target}
                     decimals={item.decimals}

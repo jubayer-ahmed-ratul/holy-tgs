@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { POPULAR_DESTINATIONS } from './destinations/destinationData';
 import DestinationCard from './destinations/DestinationCard';
@@ -17,9 +16,6 @@ export default function DestinationsSection() {
       <div className="w-11/12 mx-auto relative z-10">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 space-y-3.5">
-       
-          
-
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-950 tracking-tight leading-[1.18]">
             <span className="text-brand-teal-500">Popular</span> Destinations
           </h2>
@@ -41,13 +37,7 @@ export default function DestinationsSection() {
         </div>
 
         {/* Section Bottom Button: More Destinations */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-30px' }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="mt-12 sm:mt-16 text-center"
-        >
+        <div className="mt-12 sm:mt-16 text-center">
           <Link
             href="/destinations"
             className="inline-flex items-center justify-center gap-2.5 px-8 py-3.5 sm:py-4 rounded-full font-bold text-sm sm:text-base bg-brand-amber-500 hover:bg-brand-amber-600 text-slate-950 shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/35 active:scale-[0.98] transition-all duration-300 group"
@@ -55,9 +45,8 @@ export default function DestinationsSection() {
             <span>More Destinations</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300" />
           </Link>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
 }
-
